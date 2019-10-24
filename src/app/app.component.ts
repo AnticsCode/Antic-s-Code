@@ -1,5 +1,4 @@
 import { Component, Inject, OnInit, AfterViewInit } from '@angular/core';
-import { SwipeMenuService } from '@layout/navbar/services/swipe-menu.service';
 import { DOCUMENT } from '@angular/common';
 import { AppState } from './app.config';
 import { Store } from '@ngrx/store';
@@ -19,7 +18,6 @@ import { SwUpdate } from '@angular/service-worker';
 export class AppComponent implements OnInit, AfterViewInit {
 
   constructor(@Inject(DOCUMENT) private document: Document,
-              private swipeService: SwipeMenuService,
               private ls: StorageService,
               private crafter: CrafterService,
               private theme: ThemeService,
@@ -34,13 +32,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.openLanguageSnack();
-  }
-
-  swipe(e: any): void {
-    const x = e.center.x;
-    const w = this.document.body.clientWidth;
-    if (x >= 200 || w >= 789) { return; }
-    this.swipeService.showMenuOnSwipe(true);
   }
 
   private checkUserToken(): void {
