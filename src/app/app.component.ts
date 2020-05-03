@@ -1,13 +1,15 @@
-import { Component, Inject, OnInit, AfterViewInit } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { AppState } from './app.config';
 import { Store } from '@ngrx/store';
 
 import * as UserActions from '@core/ngrx/actions/user.actions';
-import { StorageService } from './core/storage/storage.service';
+import { StorageService } from '@core/storage/storage.service';
 import { LanguageSnackComponent } from '@layout/snackbars/language-snack/language-snack.component';
-import { ThemeService, CrafterService } from './core/services/services.index';
-import { SwUpdate } from '@angular/service-worker';
+import { MaintenanceComponent } from '@layout/dialogs/maintenance/maintenance.component';
+import { CrafterService } from '@core/services/crafter/crafter.service';
+import { ThemeService } from '@core/services/theme/theme.service';
+import { PushService } from '@core/services/push/push.service';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-root',
@@ -15,23 +17,24 @@ import { SwUpdate } from '@angular/service-worker';
   styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
 
-  constructor(@Inject(DOCUMENT) private document: Document,
-              private ls: StorageService,
-              private crafter: CrafterService,
-              private theme: ThemeService,
-              private store: Store<AppState>,
-              private sw: SwUpdate) { }
+  loaded = false;
+
+  constructor(
+    private ls: StorageService,
+    private crafter: CrafterService,
+    private theme: ThemeService,
+    private store: Store<AppState>,
+    private sw: PushService
+  ) { }
 
   ngOnInit() {
     this.checkUserToken();
     this.setTheme();
-    this.serviceWorker();
-  }
-
-  ngAfterViewInit() {
-    this.openLanguageSnack();
+    window.onload = () => {
+      this.onLoad();
+    }
   }
 
   private checkUserToken(): void {
@@ -41,9 +44,11 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   private openLanguageSnack(): void {
-    if (!(this.ls.get('lang') === 'es') || this.ls.get('user_lang')) { return; }
+    const lang = this.ls.get('lang') !== 'es';
+    const user = this.ls.get('user_lang');
+    if (lang || user) { return; }
     setTimeout(() => {
-      this.crafter.snack(LanguageSnackComponent, -1);  // Infinite
+      this.crafter.snack(LanguageSnackComponent, -1);
     }, 8000);
   }
 
@@ -51,13 +56,24 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.theme.set(this.ls.get('theme'));
   }
 
-  private serviceWorker(): void {
-    this.sw.available
-      .subscribe(event => {
-        if (event) {
-          this.sw.activateUpdate().then(() => this.document.location.reload());
-        }
-    });
+  private onLoad(): void {
+    const app = document.getElementById('app');
+    app.classList.remove('hide');
+    this.loaded = true;
+    this.sw.updateSW();
+    this.openLanguageSnack();
+
+    if (environment.maintenance) {
+      this.sorryMaintenance();
+    }
+  }
+
+  private sorryMaintenance(): void {
+    setTimeout(() => {
+      this.crafter.dialog(
+        MaintenanceComponent, { cause: 'Refactorizando'}
+      );
+    }, 4000);
   }
 
 }

@@ -3,9 +3,9 @@ import { Store } from '@ngrx/store';
 import { AppState } from '@app/app.config';
 import * as fromArticles from '@core/ngrx/selectors/article.selectors';
 import * as ArticleActions from '@core/ngrx/actions/article.actions';
-import { Observable, Subject } from 'rxjs';
-import { Article } from '@app/shared/interfaces/interfaces';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { Article } from '@shared/interfaces/interfaces';
+import { takeUntil, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-liked-home',
@@ -22,27 +22,25 @@ export class LikedHomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.checkData();
-    this.getLikedArticles();
+    this.articles$ = this.store.select(fromArticles.getMostLiked);
   }
 
   private checkData(): void {
     this.store.select(fromArticles.getMostLikedLoaded)
-     .pipe(takeUntil(this.unsubscribe$))
-     .subscribe((res: boolean) => {
-       if (!res) {
-         this.store.dispatch(ArticleActions.getMostLikedArticles());
-       }
+     .pipe(
+       filter(res => !res),
+       takeUntil(this.unsubscribe$)
+      )
+     .subscribe(_ => {
+         this.store.dispatch(
+           ArticleActions.getMostLiked()
+        );
     });
-  }
-
-  private getLikedArticles(): void {
-    this.articles$ = this.store.select(fromArticles.getMostLiked);
   }
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
-
 
 }

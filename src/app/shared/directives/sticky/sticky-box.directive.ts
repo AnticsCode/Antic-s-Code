@@ -20,8 +20,10 @@ export class StickyBoxDirective implements AfterViewInit, OnDestroy {
   private unsubscribe$ = new Subject<void>();
   height: number;
 
-  constructor(private el: ElementRef,
-              private renderer: Renderer2) { }
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2
+  ) { }
 
   ngAfterViewInit(): void {
     this.startSticky();
@@ -42,7 +44,6 @@ export class StickyBoxDirective implements AfterViewInit, OnDestroy {
   }
 
   private makeSticky(): void {
-
     const el = this.el.nativeElement;
     let height = el.offsetHeight;
     if (!el || height === 0) { return; }
@@ -55,13 +56,13 @@ export class StickyBoxDirective implements AfterViewInit, OnDestroy {
     }
 
     let div: number;
-    let padding = 216;  // If Content Above the Box
+    let padding = 214;  // If Content Above the Box
 
     if (this.empty) { height = 32; padding = 0; }  // 32 = 2rem
     if (!this.height) { this.height = height; }
 
     const section = document.getElementById(this.selector);
-    section ? div = section.getBoundingClientRect().height : div = 1;
+    section ? div = section.getBoundingClientRect().height - el.offsetTop : div = 1;
 
     if (div === 1) { // No Selector or NOT loaded yet
       this.setAutoHeight(el);
@@ -79,7 +80,7 @@ export class StickyBoxDirective implements AfterViewInit, OnDestroy {
   }
 
   private setElementHeight(d: number, h: number, p: number, el: any): void {
-    this.renderer.setStyle(el, 'height', `${d - h - p}px`);
+    this.renderer.setStyle(el, 'height', `${d - h + p}px`);
   }
 
   private setAutoHeight(el: any): void {

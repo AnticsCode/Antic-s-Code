@@ -1,9 +1,9 @@
-<mat-dialog-content [ngClass]="{'overflow': isReg }">
+<mat-dialog-content class="overflow">
   <div class="login-wrapper">
     <span *ngIf="isReg"
           (click)="isReg = false;
                    isCon = false">
-          {{'back' | translate}}
+          <mat-icon>keyboard_arrow_left</mat-icon>
     </span>
     <h3>Antic's Code</h3>
     <app-sign-in *ngIf="!isReg && !isCon"

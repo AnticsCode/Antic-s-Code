@@ -1,11 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { CATEGORIES, TAGS, LEVELS, BADGES, SEARCH_TYPES, STAR_LIST } from '@app/shared/shared.data';
+
+import {
+  CATEGORIES,
+  TAGS,
+  LEVELS,
+  BADGES,
+  SEARCH_TYPES,
+  STAR_LIST
+} from '@shared/shared.data';
+
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { SearchRequest, StarList } from '@app/shared/interfaces/interfaces';
+import { SearchRequest, StarList } from '@shared/interfaces/interfaces';
 import * as SearchActions from '@core/ngrx/actions/search.actions';
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/app.config';
+import { PaginationService } from 'ngx-pagination';
 
 @Component({
   selector: 'app-search-filter',
@@ -27,43 +37,14 @@ export class SearchFilterComponent implements OnInit {
   starsArray = [] as number[];
   active = false;
 
-  constructor(private store: Store<AppState>) { }
+  constructor(
+    private store: Store<AppState>,
+    private pagination: PaginationService
+  ) { }
 
   ngOnInit() {
     this.createSearchForm();
     this.list = this.resetList(STAR_LIST);
-  }
-
-  submit(): void {
-    const request: SearchRequest = this.searchForm.value;
-    request.stars = this.starsArray;
-    request.badges = this.badgesArray;
-    request.level = this.levelsArray;
-
-    if (request.stars.length === 0) { request.stars = null; }
-    if (request.badges.length === 0) { request.badges = null; }
-    if (request.level.length === 0) { request.level = null; }
-
-    this.store.dispatch(SearchActions.searchContent({ request }));
-    this.scroll('search-section');
-  }
-
-  levelChanged(e: MatCheckboxChange): void {
-    const level = e.source.value;
-    e.checked ? this.levelsArray.push(level) :
-    this.levelsArray = this.levelsArray.filter((l: string) => l !== level);
-  }
-
-  badgeChanged(e: MatCheckboxChange): void {
-    const badge = e.source.value;
-    e.checked ? this.badgesArray.push(badge) :
-    this.badgesArray = this.badgesArray.filter((b: string) => b !== badge);
-  }
-
-  starChanged(e: MatCheckboxChange): void {
-    const star = Number(e.source.value);
-    e.checked ? this.starsArray.push(star) :
-    this.starsArray = this.starsArray.filter((s: number) => s !== star);
   }
 
   private createSearchForm(): void {
@@ -75,6 +56,42 @@ export class SearchFilterComponent implements OnInit {
         type: new FormControl(null, []),
         sort: new FormControl(null, [])
     });
+  }
+
+  public submit(): void {
+    const request: SearchRequest = this.searchForm.value;
+    request.stars = this.starsArray;
+    request.badges = this.badgesArray;
+    request.level = this.levelsArray;
+
+    if (request.stars.length === 0) { request.stars = null; }
+    if (request.badges.length === 0) { request.badges = null; }
+    if (request.level.length === 0) { request.level = null; }
+
+    this.store.dispatch(SearchActions.searchContent({ request }));
+    this.scroll('search-section');
+
+    setTimeout(() => {
+      this.pagination.setCurrentPage('result-pagination', 1);
+    }, 1000);
+  }
+
+  public levelChanged(e: MatCheckboxChange): void {
+    const level = e.source.value;
+    e.checked ? this.levelsArray.push(level) :
+    this.levelsArray = this.levelsArray.filter((l: string) => l !== level);
+  }
+
+  public badgeChanged(e: MatCheckboxChange): void {
+    const badge = e.source.value;
+    e.checked ? this.badgesArray.push(badge) :
+    this.badgesArray = this.badgesArray.filter((b: string) => b !== badge);
+  }
+
+  public starChanged(e: MatCheckboxChange): void {
+    const star = Number(e.source.value);
+    e.checked ? this.starsArray.push(star) :
+    this.starsArray = this.starsArray.filter((s: number) => s !== star);
   }
 
   private scroll(id: string): void {

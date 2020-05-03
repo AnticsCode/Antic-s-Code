@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FAQS } from '@app/shared/shared.data';
+import { Component, Input } from '@angular/core';
+import { Category } from '@app/shared/interfaces/interfaces';
 
 @Component({
   selector: 'app-single-category-faq-box',
@@ -7,12 +7,14 @@ import { FAQS } from '@app/shared/shared.data';
   styleUrls: ['./single-category-faq-box.component.scss']
 })
 
-export class SingleCategoryFaqBoxComponent implements OnInit {
+export class SingleCategoryFaqBoxComponent {
 
-  faqs = FAQS;
+  @Input() category: Category;
 
   constructor() { }
 
-  ngOnInit() { }
+  public resize(): void {
+    window.dispatchEvent(new Event('resize'));
+  }
 
 }

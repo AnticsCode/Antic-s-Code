@@ -1,50 +1,63 @@
 import { createReducer, on, Action } from '@ngrx/store';
 import * as UserActions from '../actions/user.actions';
-import { User } from '@app/shared/interfaces/interfaces';
+import { User, MostActive } from '@shared/interfaces/interfaces';
 
 export interface UserState {
   user: User;
-  public: User;
-  email: string;
+  users: User[];
   loaded: boolean;
+  mostActive: MostActive[];
+  mostActiveLoaded: boolean;
+  public: User;
   publicLoaded: boolean;
+  email: string;
   error: string;
 }
 
 export const inititalState: UserState = {
   user: null,
-  public: null,
-  email: null,
+  users: [],
   loaded: false,
+  mostActive: null,
+  mostActiveLoaded: false,
+  public: null,
   publicLoaded: false,
+  email: null,
   error: null
 };
 
 const featureReducer = createReducer(
   inititalState,
   // SET USER
-  on(UserActions.setUser, (state, { user }) => {
-    if (!user.profile) { user.profile = {}; }
-    return (
-      {
-        ...state,
-        loaded: false,
-        error: null,
-        user
-      }
-    ); }),
-  on(UserActions.setUserSuccess, (state) => (
+  on(UserActions.set, (state) => (
+      { ...state, error: null }
+  )),
+  on(UserActions.setSuccess, (state, { user }) => (
+    {...state, error: null, user }
+  )),
+  on(UserActions.setFailure, (state, { error }) => (
+    { ...state, loaded: false, error }
+  )),
+  // GET ALL USERS
+  on(UserActions.get, (state) => (
+    { ...state, loaded: false, error: null }
+  )),
+  on(UserActions.getSuccess, (state, { users }) => (
     {
       ...state,
       loaded: true,
-      error: null
+      error: null,
+      users
     }
   )),
-   // USER BY NAME
-   on(UserActions.getUserByName, (state, { name }) => (
+  on(UserActions.getFailure, (state, { error }) => (
+    { ...state, loaded: false, error, users: null }
+  )),
+   // GET USER BY NAME
+   on(UserActions.getByName, (state, { name }) => (
     { ...state, publicLoaded: false, error: null }
   )),
-  on(UserActions.getUserByNameSuccess, (state, { user }) => (
+  on(UserActions.getByNameSuccess, (state, { user }) => (
     {
       ...state,
       publicLoaded: true,
@@ -52,74 +65,57 @@ const featureReducer = createReducer(
       public: user
     }
   )),
-  on(UserActions.getUserByNameFailure, (state, { error }) => (
+  on(UserActions.getByNameFailure, (state, { error }) => (
     { ...state, publicLoaded: false, error }
   )),
+  // GET MOST ACTIVE USERS
+  on(UserActions.getMostActive, (state) => (
+   { ...state, mostActiveLoaded: false, error: null }
+ )),
+ on(UserActions.getMostActiveSuccess, (state, { active }) => (
+   {
+     ...state,
+     mostActive: active,
+     mostActiveLoaded: true,
+     error: null
+   }
+ )),
+ on(UserActions.getMostActiveFailure, (state, { error }) => (
+   { ...state, mostActiveLoaded: false, error }
+ )),
   // SET USER EMAIL
-  on(UserActions.setUserEmail, (state, { email }) => (
-    {
-      ...state,
-      loaded: false,
-      error: null
-    }
+  on(UserActions.setEmail, (state) => (
+    { ...state, error: null }
   )),
-  on(UserActions.setUserEmailSuccess, (state, { email }) => (
-    {
-      ...state,
-      loaded: true,
-      error: null,
-      email
-    }
+  on(UserActions.setEmailSuccess, (state, { email }) => (
+    { ...state, error: null, email }
   )),
-  on(UserActions.setUserEmailFailure, (state, { error }) => (
+  on(UserActions.setEmailFailure, (state, { error }) => (
     { ...state, loaded: false, error }
   )),
   // VERIFY TOKEN
   on(UserActions.verifyToken, (state) => (
-    {
-      ...state,
-      loaded: false,
-      error: null
-    }
+    { ...state, error: null }
   )),
   on(UserActions.verifyTokenSuccess, (state, { user }) => (
-    {
-      ...state,
-      loaded: true,
-      error: null,
-      user
-    }
+    { ...state, error: null, user }
   )),
   on(UserActions.verifyTokenFailure, (state, { error }) => (
-    { ...state, loaded: false, error, user: null }
+    { ...state, error, user: null }
   )),
   // REFRESH TOKEN
-  on(UserActions.refreshToken, (state, { id }) => (
-    {
-      ...state,
-      loaded: false,
-      error: null
-    }
+  on(UserActions.refreshToken, (state) => (
+    { ...state, loaded: false, error: null }
   )),
   on(UserActions.refreshTokenSuccess, (state, { user }) => (
-    {
-      ...state,
-      loaded: true,
-      error: null,
-      user
-    }
+    { ...state, error: null, user }
   )),
   on(UserActions.refreshTokenFailure, (state, { error }) => (
     { ...state, loaded: false, error, user: null }
   )),
   // USER LOG OUT
   on(UserActions.userLogOut, (state) => (
-    {
-      ...state,
-      loaded: true,
-      error: null,
-      user: null
-    }
+    { ...state, error: null, user: null }
   )),
   // RESET
   on(UserActions.resetUserName, (state) => (
@@ -137,6 +133,10 @@ export function reducer(state: UserState | undefined, action: Action) {
 }
 
 export const getUser = (state: UserState) => state.user;
+export const getAllUsers = (state: UserState) => state.users;
+export const getMostActive = (state: UserState) => state.mostActive;
+export const getMostActiveLoaded = (state: UserState) => state.mostActiveLoaded;
 export const getUserByName = (state: UserState) => state.public;
 export const getUserByNameLoaded = (state: UserState) => state.publicLoaded;
+export const getAllUsersLoaded = (state: UserState) => state.loaded;
 export const getEmail = (state: UserState) => state.email;

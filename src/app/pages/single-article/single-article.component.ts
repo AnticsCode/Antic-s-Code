@@ -2,12 +2,14 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AppState } from '@app/app.config';
-import { Article } from '@app/shared/interfaces/interfaces';
-import { Subject } from 'rxjs';
-import { takeUntil, distinctUntilChanged } from 'rxjs/operators';
+import { Article } from '@shared/interfaces/interfaces';
+import { Subject, Observable } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { UserService } from '@core/services/user/user.service';
 
 import * as ArticleActions from '@core/ngrx/actions/article.actions';
 import * as fromArticles from '@core/ngrx/selectors/article.selectors';
+import * as InterActions from '@core/ngrx/actions/interaction.actions';
 
 @Component({
   selector: 'app-single-article',
@@ -17,34 +19,37 @@ import * as fromArticles from '@core/ngrx/selectors/article.selectors';
 
 export class SingleArticleComponent implements OnInit, OnDestroy {
 
-  article: Article;
+  article$: Observable<Article>;
   private unsubscribe$ = new Subject<void>();
 
-  constructor(private route: ActivatedRoute,
-              private store: Store<AppState>) { }
+  constructor(
+    private route: ActivatedRoute,
+    private userSrv: UserService,
+    private store: Store<AppState>
+  ) { }
 
   ngOnInit() {
-    this.article = null;
-    this.getArticlyBySlug();
+    this.getArticleBySlug();
+    this.getInteraction();
+    this.article$ = this.store.select(fromArticles.getBySlug)
   }
 
-  private getArticlyBySlug(): void {
+  private getArticleBySlug(): void {
     this.route.params
      .pipe(takeUntil(this.unsubscribe$))
       .subscribe(params => {
-        this.store.dispatch(ArticleActions.getArticleBySlug({ slug: params.slug }));
+        this.store.dispatch(
+          ArticleActions.getBySlug({ slug: params.slug })
+        );
     });
+  }
 
-    this.store.select(fromArticles.getArticleBySlug)
-      .pipe(
-        takeUntil(this.unsubscribe$),
-        distinctUntilChanged())
-      .subscribe((res: Article) => {
-        if (res) {
-          this.article = null;
-          setTimeout(() => { this.article = res; }, 400);
-        }
-    });
+  private getInteraction(): void {
+    if (this.userSrv.getUser()) {
+      this.store.dispatch(
+        InterActions.getByUser()
+      );
+    }
   }
 
   ngOnDestroy(): void {

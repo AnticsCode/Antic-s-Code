@@ -17,44 +17,41 @@ import { JwtInterceptor } from './services/http/jwt.interceptor';
 
 import { StorageModule } from './storage/storage.module';
 import { NgxWebstorageModule } from 'ngx-webstorage';
-import { ServicesModule } from './services/services.module';
-import { DisqusModule } from 'ngx-disqus';
+import { DISQUS_SHORTNAME } from 'ngx-disqus';
 
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { ArticleEffects } from './ngrx/effects/article.effects';
 import { CategoryEffects } from './ngrx/effects/category.effects';
-import { CodeEffects } from './ngrx/effects/code.effects';
 import { UserEffects } from './ngrx/effects/user.effects';
 import { SearchEffects } from './ngrx/effects/search.effects';
+import { InteractionEffects } from './ngrx/effects/interaction.effects';
 import { reducers } from './ngrx/reducers/reducers.index';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { ToastrModule } from 'ngx-toastr';
 import { LoadingBarModule } from '@ngx-loading-bar/core';
 import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
+import { NgMarkdownModule } from './markdown/markdown.module';
+import { DeviceDetectorModule } from 'ngx-device-detector';
 
 @NgModule({
   imports: [
     CommonModule,
     StorageModule,
-    ServicesModule,
     LoadingBarModule,
+    NgMarkdownModule,
     LoadingBarHttpClientModule,
+    DeviceDetectorModule.forRoot(),
     NgxWebstorageModule.forRoot(CORE_MODULE_CONSTANTS.WEBSTORAGE_CONFIG),
     StoreModule.forFeature('AppState', reducers),
     EffectsModule.forRoot([
       ArticleEffects,
       CategoryEffects,
-      CodeEffects,
       UserEffects,
-      SearchEffects
+      SearchEffects,
+      InteractionEffects
     ]),
-    StoreDevtoolsModule.instrument({
-      maxAge: 25
-    }),
     LanguageModule.forRoot(),
-    DisqusModule.forRoot(APP_CONSTANTS.DISQUS),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -67,7 +64,8 @@ import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: CORE_MODULE_CONFIG, useValue: CORE_MODULE_CONSTANTS },
-    { provide: ErrorHandler, useClass: ErrorHandlerService }
+    { provide: ErrorHandler, useClass: ErrorHandlerService },
+    { provide: DISQUS_SHORTNAME, useValue: APP_CONSTANTS.DISQUS }
   ],
   exports: [LoadingBarModule]
 })
@@ -75,7 +73,7 @@ import { LoadingBarHttpClientModule } from '@ngx-loading-bar/http-client';
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {
     if (parentModule) {
-      throw new Error('CoreModule is already loaded. Import it in the AppModule only');
+      throw new Error('CoreModule is already loaded.');
     }
   }
 }

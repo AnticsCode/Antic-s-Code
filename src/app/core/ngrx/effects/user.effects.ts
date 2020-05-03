@@ -1,40 +1,76 @@
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
-
 import * as UserActions from '../actions/user.actions';
 import { map, concatMap, catchError } from 'rxjs/operators';
-import { UserService } from '../../services/user/user.service';
-import { StorageService } from '@app/core/storage/storage.service';
+import { StorageService } from '@core/storage/storage.service';
+import { UserService } from '@core/services/user/user.service';
+import { InteractionService } from '@core/services/interaction/interaction.service';
 
 @Injectable()
 
 export class UserEffects {
-  constructor(private actions: Actions,
-              private user: UserService,
-              private ls: StorageService) { }
+
+  constructor(
+    private actions: Actions,
+    private userSrv: UserService,
+    private ls: StorageService
+  ) { }
+
   // SET USER
   setUserEffect$ = createEffect(() => this.actions
     .pipe(
-      ofType(UserActions.setUser),
+      ofType(UserActions.set),
       concatMap((action) =>
-         of(UserActions.setUserSuccess({user: action.user}))),
+         of(UserActions.setSuccess({user: action.user}))),
           catchError(error =>
-              of(UserActions.setUserFailure({ error: error.message }))
+              of(UserActions.setFailure({ error: error.message }))
         )
       )
+  );
+
+  // GET ALL USER
+  getUsersEffect$ = createEffect(() => this.actions
+  .pipe(
+    ofType(UserActions.get),
+    concatMap(() =>
+    this.userSrv.getUsers()
+    .pipe(
+      map(users => UserActions.getSuccess({ users })),
+        catchError(error =>
+            of(UserActions.getFailure({ error: error.message }))
+        )
+      )
+    )
+   )
   );
 
   // GET USER BY NAME
   getUserByNameEffect$ = createEffect(() => this.actions
   .pipe(
-    ofType(UserActions.getUserByName),
+    ofType(UserActions.getByName),
     concatMap((action) =>
-    this.user.getUserByName(action.name)
+    this.userSrv.getByName(action.name)
       .pipe(
-        map(res => UserActions.getUserByNameSuccess({user: res.user})),
+        map(user => UserActions.getByNameSuccess({ user })),
         catchError(error =>
-            of(UserActions.getUserByNameFailure({ error: error.message }))
+            of(UserActions.getByNameFailure({ error: error.message }))
+          )
+        )
+      )
+    )
+  );
+
+  // GET MOST ACTIVE USERS
+  getMostActiveUsersEffect$ = createEffect(() => this.actions
+  .pipe(
+    ofType(UserActions.getMostActive),
+    concatMap(() =>
+    this.userSrv.getMostActive()
+      .pipe(
+        map(users => UserActions.getMostActiveSuccess({ active: users })),
+        catchError(error =>
+            of(UserActions.getMostActiveFailure({ error: error.message }))
           )
         )
       )
@@ -44,11 +80,11 @@ export class UserEffects {
   // SET USER EMAIL
   setUserEmailEffect$ = createEffect(() => this.actions
     .pipe(
-      ofType(UserActions.setUserEmail),
+      ofType(UserActions.setEmail),
       concatMap((action) =>
-         of(UserActions.setUserEmailSuccess({email: action.email}))),
+         of(UserActions.setEmailSuccess({email: action.email}))),
           catchError(error =>
-              of(UserActions.setUserEmailFailure({ error: error.message }))
+              of(UserActions.setEmailFailure({ error: error.message }))
         )
       )
   );
@@ -58,9 +94,9 @@ export class UserEffects {
     .pipe(
       ofType(UserActions.verifyToken),
       concatMap(() =>
-      this.user.verifyToken()
+      this.userSrv.verifyToken()
         .pipe(
-          map(res => UserActions.verifyTokenSuccess({user: res.user})),
+          map(user => UserActions.verifyTokenSuccess({ user })),
           catchError(error =>
               of(UserActions.verifyTokenFailure({ error: error.message }))
           )
@@ -74,14 +110,9 @@ export class UserEffects {
     .pipe(
       ofType(UserActions.refreshToken),
       concatMap((action) =>
-      this.user.refreshToken(action.id)
+      this.userSrv.refreshToken(action.id)
         .pipe(
-          map(res => {
-            if (res.ok) {
-              this.ls.setKey('token', res.token);
-              return UserActions.refreshTokenSuccess({ user: res.user });
-            }
-          }),
+          map(res => UserActions.refreshTokenSuccess({ user: res.user })),
           catchError(error =>
               of(UserActions.refreshTokenFailure({ error: error.message }))
           )

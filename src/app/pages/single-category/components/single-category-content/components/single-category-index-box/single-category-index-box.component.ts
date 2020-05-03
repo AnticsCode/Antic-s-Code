@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CATEGORY_TOC } from '@app/shared/shared.data';
+import { Component } from '@angular/core';
+import { CATEGORY_INDEX } from '@app/shared/shared.data';
 
 @Component({
   selector: 'app-single-category-index-box',
@@ -7,13 +7,11 @@ import { CATEGORY_TOC } from '@app/shared/shared.data';
   styleUrls: ['./single-category-index-box.component.scss']
 })
 
-export class SingleCategoryIndexBoxComponent implements OnInit {
+export class SingleCategoryIndexBoxComponent {
 
-  toc = CATEGORY_TOC;
+  index = CATEGORY_INDEX;
 
   constructor() { }
-
-  ngOnInit() { }
 
   scroll(box: string): void {
     const el = document.getElementById(box);
