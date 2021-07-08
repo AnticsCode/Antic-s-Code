@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PAGE_BG } from '@shared/shared.data';
+import { PAGE_BG } from '@shared/data/app';
 
 @Component({
   selector: 'app-page-header',
@@ -11,6 +11,7 @@ import { PAGE_BG } from '@shared/shared.data';
 export class PageHeaderComponent implements OnInit {
 
   @Input() title: string;
+  @Input() onNews = false;
   @Input() subTitle: string;
   background: string;
   bgs = PAGE_BG;
@@ -41,6 +42,10 @@ export class PageHeaderComponent implements OnInit {
       case 'Search': return this.bgs.search;
       case 'Support': return this.bgs.support;
       case 'Users': return this.bgs.users;
+      case 'Test': return this.bgs.tests;
+      case 'Single Test': return this.bgs.test;
+      case 'News': return this.bgs.news;
+      case 'Notice': return this.bgs.notice;
       default: return '';
     }
   }

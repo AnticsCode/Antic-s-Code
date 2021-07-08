@@ -1,0 +1,20 @@
+<ng-container *ngIf="(entry$ | async) as entry">
+  <app-content-box [title]="entry.title" icon="fact_check">
+    <div class="category">
+      <img [alt]="entry.category"
+           [src]="(entry.category | logo) | image:'logos'">
+      <div class="right">
+        <span>{{entry.category}}</span>
+        <app-level-bar [level]="entry.level"></app-level-bar>
+      </div>
+    </div>
+    <p class="info" [innerHTML]="entry.message"></p>
+
+    <app-test-stepper [entry]="entry"
+                      (completed)="onCompleted($event, entry)">
+    </app-test-stepper>
+  </app-content-box>
+</ng-container>
+
+
+

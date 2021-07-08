@@ -1,7 +1,5 @@
 <div class="card-badge-content">
-  <span [ngClass]="{'badge-featured-article': b === 'Destacado',
-                    'badge-new-article': b === 'Nuevo',
-                    'badge-popular-article': b === 'Popular'}"
+  <span [class]="b | badge: '-article'"
         *ngFor="let b of badges">
         {{b | translate}}
   </span>

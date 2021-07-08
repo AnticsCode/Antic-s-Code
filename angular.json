@@ -23,6 +23,17 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "aot": true,
+            "allowedCommonJsDependencies": [
+              "hammerjs",
+              "socket.io-client",
+              "debug",
+              "socket.io-parser",
+              "firebase",
+              "firebase/app",
+              "firebase/auth",
+              "@firebase/auth",
+              "ngx-swiper-wrapper"
+            ],
             "assets": [
               "src/assets",
               "src/manifest.webmanifest",
@@ -36,7 +47,8 @@
             ],
             "scripts": [
               {
-                "input": "node_modules/document-register-element/build/document-register-element.js"
+                "input": "node_modules/document-register-element/build/document-register-element.js",
+                "inject": true
               },
               "node_modules/marked/lib/marked.js",
               "node_modules/prismjs/prism.js",
@@ -49,8 +61,7 @@
               "node_modules/prismjs/components/prism-git.min.js",
               "node_modules/prismjs/components/prism-go.min.js",
               "node_modules/prismjs/components/prism-python.min.js"
-            ],
-            "es5BrowserSupport": true
+            ]
           },
           "configurations": {
             "testing": {
@@ -71,7 +82,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -174,5 +184,10 @@
       }
     }
   },
-  "defaultProject": "antics-code"
+  "defaultProject": "antics-code",
+  "schematics": {
+    "@schematics/angular:component": {
+      "changeDetection": "OnPush"
+    }
+  }
 }

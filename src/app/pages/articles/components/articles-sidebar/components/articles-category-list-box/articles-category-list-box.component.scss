@@ -5,15 +5,28 @@ ul {
 }
 
 li {
-  margin-bottom: .66rem;
+  margin-bottom: .666rem;
   position: relative;
   display: flex;
   align-items: center;
   outline: none;
   cursor: pointer;
-  &:last-child { margin-bottom: 0 }
-  & mat-icon { margin-right: 10px }
-  &:hover span { color: var(--primary-color) }
+  height: 32.5px;
+
+  & mat-icon {
+    color: var(--p-color);
+    display: inline;
+    margin-right: 1.1rem;
+    position: relative;
+    top: 2px;
+    left: -2px;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+    margin-left: .5rem;
+    color: var(--p-color);
+  }
 
   & img {
     border-radius: 25%;
@@ -23,6 +36,8 @@ li {
     width: 24px;
   }
 
-  &:hover img { filter: brightness(1.1) }
-
+  &:hover {
+    & span { color: var(--primary-color) }
+    & img { filter: brightness(1.1) }
+  }
 }

@@ -1,18 +1,37 @@
-mat-form-field, button { width: 100% }
-button { margin-top: 1rem }
-
-mat-form-field {
-  @media(max-width: 992px) and (min-width: 500px) {
-    max-width: 46%;
-    &:first-child { margin-right: 2rem }
-   }
+mat-form-field, button {
+  width: 100%;
+  @media(max-width: 993px) and (min-width: 700px) {
+    max-width: 48%;
+  }
 }
+
+button { margin: .6rem 0 0 auto }
 
 form {
   margin: auto;
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: space-between;
+  margin-top: .5rem;
+}
+
+@media(max-width: 993px) and (min-width: 700px) {
+  button {
+    position: relative;
+    top: 2px;
+    margin: 0;
+    height: 44px;
+  }
+
+  form { margin-bottom: -.9rem }
+}
+
+mat-form-field {
+  margin-bottom: .3rem;
+  &:last-of-type {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
 }
 
 .theme-sample {
@@ -21,6 +40,15 @@ form {
   margin-top: 1rem;
   width: 1rem;
   height: 1rem;
+  border-radius: 4px;
+}
+
+img {
+  position: absolute;
+  right: 1rem;
+  margin-top: .5rem;
+  width: 30px;
+  height: auto;
   border-radius: 4px;
 }
 

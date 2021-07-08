@@ -1,61 +1,56 @@
-<app-content-box [title]="'users.list' | translate">
-  <p>A continuación se lista todos los usuarios registrados en
-    <strong>Antic's Code</strong>.
-  </p>
-  <p>
-    Puedes encontrar desarrolladores y
-  diseñadores de todo tipo. Quizá alguno de ellos pueda ser la persona
-  que necesitas para llevar tus ideas a la realidad.
-  </p>
-  <p>¡Actualmente somos <strong>{{users?.length || 0}}</strong> programadores!</p>
-
+<app-content-box title="USERS.LIST" icon="person">
+  <div [innerHTML]="'USERS.INTRO' | translate: {
+                                      count: (users$ | async)?.length || 0
+                                    }">
+  </div>
   <div class="search-user">
     <mat-form-field appearance="outline"
-                    color="accent">
-      <mat-label>Buscar</mat-label>
+                    color="accent"
+                    class="search-users">
+      <mat-label>{{'SEARCH.USERS' | translate}}</mat-label>
       <mat-icon matPrefix>search</mat-icon>
-      <input type="text" matInput [(ngModel)]="value" (keyup)="search()">
+      <input type="text"
+             matInput
+             [(ngModel)]="value"
+             (keyup)="search()"
+             autocomplete="off">
     </mat-form-field>
 
     <div class="search-user-sort">
-      <span (click)="sort('Admin')">
-        <img [src]="'mage.png' | image:'unicode'">
-      </span>
-      <span (click)="sort('User')">
-        <img [src]="'user.png' | image:'unicode'">
-      </span>
-      <span (click)="sort('All')">
-        <img [src]="'all.png' | image:'unicode'">
+      <span *ngFor="let r of userRols"
+            (click)="sort(r.rol)"
+            [matTooltip]="r.name | translate"
+             matTooltipPosition="above">
+        <img [src]="r.icon | image: 'unicode'"/>
       </span>
     </div>
   </div>
-
-  <hr class="hr">
-
-  <div class="row">
-    <div class="col-lg-12" *ngIf="filteredUsers?.length > 0; else skeleton">
-      <app-user-card *ngFor="let user of filteredUsers | paginate: {
-                                                          itemsPerPage: itemsPerPage,
-                                                          currentPage: page,
-                                                          id: 'users-pagination' }; let last = last"
-                     [user]="user"
-                     [last]="last">
-      </app-user-card>
-    </div>
-  </div>
-
-  <ng-template #skeleton>
-    <app-user-card [skeleton]="true" *ngFor="let c of [1,2,3,4,5]">
-    </app-user-card>
-  </ng-template>
+  <div id="users-list"></div>
 </app-content-box>
 
 <div class="row">
-  <div class="col-lg-12">
-    <app-pagination [margin]="0"
-                    *ngIf="filteredUsers?.length > itemsPerPage"
-                    id="users-pagination"
-                    selector="users-list">
-    </app-pagination>
-  </div>
+  <ng-container *ngIf="(filtered$ | async) as users; else noUsers">
+    <div class="col-lg-12">
+      <app-user-card *ngFor="let user of users |
+                                          paginate: {
+                                            itemsPerPage: itemsPerPage,
+                                            currentPage: page,
+                                            id: 'users-pagination'
+                                          }; let first = first"
+                      [user]="user"
+                      [first]="first">
+      </app-user-card>
+    </div>
+    <div class="col-lg-12">
+      <app-pagination [margin]="0"
+                      *ngIf="users.length > itemsPerPage"
+                      id="users-pagination"
+                      selector="users-list">
+      </app-pagination>
+    </div>
+  </ng-container>
 </div>
+
+<ng-template #noUsers>
+  <app-user-card *ngFor="let c of [1,2,3,4,5]"></app-user-card>
+</ng-template>

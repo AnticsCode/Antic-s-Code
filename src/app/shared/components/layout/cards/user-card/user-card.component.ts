@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { User } from '@shared/interfaces/interfaces';
-import { SOCIAL_PROFILE } from '@shared/shared.data';
+import { CrafterService } from '@core/services/crafter/crafter.service';
 
 @Component({
   selector: 'app-user-card',
@@ -11,10 +11,12 @@ import { SOCIAL_PROFILE } from '@shared/shared.data';
 export class UserCardComponent {
 
   @Input() user: User;
-  @Input() skeleton: boolean;
-  @Input() last: boolean;
-  social = SOCIAL_PROFILE;
+  @Input() first: boolean;
 
-  constructor() { }
+  constructor(private crafter: CrafterService) { }
+
+  public show(): void {
+    console.log('hey');
+  }
 
 }

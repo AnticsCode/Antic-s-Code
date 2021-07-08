@@ -1,10 +1,7 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { AppState } from '@app/app.config';
-import * as fromArticles from '@core/ngrx/selectors/article.selectors';
-import * as ArticleActions from '@core/ngrx/actions/article.actions';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Observable } from 'rxjs';
+
+import { ArticlesFacade } from '@store/articles/article.facade';
 
 @Component({
   selector: 'app-articles-sort-bar',
@@ -12,41 +9,21 @@ import { takeUntil, filter } from 'rxjs/operators';
   styleUrls: ['./articles-sort-bar.component.scss']
 })
 
-export class ArticlesSortBarComponent implements OnInit, OnDestroy {
+export class ArticlesSortBarComponent implements OnInit {
 
+  @Input() active = false;
   @Output() grid = new EventEmitter<boolean>();
   count$: Observable<number>;
-  active = false;
-  private unsubscribe$ = new Subject<void>();
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private articleFacade: ArticlesFacade) { }
 
   ngOnInit() {
-    this.checkData();
-    this.count$ = this.store.select(fromArticles.getCount);
-  }
-
-  private checkData(): void {
-    this.store.select(fromArticles.getCountLoaded)
-     .pipe(
-       filter(res => !res),
-       takeUntil(this.unsubscribe$)
-      )
-      .subscribe(_ => {
-         this.store.dispatch(
-           ArticleActions.getCount()
-        );
-    });
+    this.count$ = this.articleFacade.count$;
   }
 
   public sort(): void {
     this.active = !this.active;
     this.grid.emit(this.active);
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
   }
 
 }

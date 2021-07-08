@@ -1,0 +1,66 @@
+.stepper {
+  position: relative;
+  top: -.5rem;
+  left: -5px;
+
+  &-question {
+    margin-top: .5rem;
+    & mat-label {
+      margin-bottom: .5rem;
+      font-weight: bold;
+    }
+  }
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: .8rem 0;
+}
+
+.radio-button {
+  margin: .8rem 0;
+
+  & span {
+    font-size: .9rem;
+    position: relative;
+    margin-left: .5rem;
+    @media(max-width: 550px) { font-size: .8rem !important }
+  }
+}
+
+button { margin-right: .8rem }
+
+.text-left {
+  margin-top: 1.666rem;
+  text-align: left;
+
+  @media(max-width: 750px) { margin-top: 2rem }
+}
+
+@media(max-width: 993px) {
+  .radio-group { margin: 0 }
+
+  .radio-button {
+    margin: .4rem 0;
+
+    & span {
+      white-space: normal;
+      display: inline-flex;
+    }
+  }
+}
+
+@media(max-width: 400px) {
+  .last {
+    position: relative;
+    left: -26px;
+    width: 250px;
+
+    & button {
+      margin-right: 0.3rem;
+      padding: 0 14px !important;
+    }
+  }
+}
+

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatSnackBarRef } from '@angular/material/snack-bar';
+
 import { LanguageService } from '@core/language/services/language.service';
 import { StorageService } from '@core/storage/storage.service';
 
@@ -22,7 +23,7 @@ export class LanguageSnackComponent {
   }
 
   public setLanguage(value?: string): void {
-    this.ls.setKey('user_lang', true);
+    this.ls.setKey('skip_lang', true);
     if (value) {
       this.lang.change(value);
       this.ls.setKey('lang', value);

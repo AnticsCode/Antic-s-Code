@@ -1,10 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PublicProfileComponent } from './public-profile.component';
+
 import { SharedModule } from '@app/shared/shared.module';
-import { LayoutModule } from '@app/shared/components/layout/layout.module';
 import { PublicProfileRouting } from './public-profile.routing';
 import { ArticlesSidebarModule } from '@app/pages/articles/components/articles-sidebar/articles-sidebar.module';
+
+import { PublicProfileComponent } from './public-profile.component';
+
+import { BoxesModule } from '@layout/boxes/boxes.module';
+import { PageHeaderModule } from '@layout/page-header/page-header.module';
+import { SectionModule } from '@layout/section/section.module';
+import { UserStatsBoxModule } from '@layout/boxes/user-stats-box/user-stats-box.module';
 
 @NgModule({
   declarations: [
@@ -14,8 +20,11 @@ import { ArticlesSidebarModule } from '@app/pages/articles/components/articles-s
     CommonModule,
     PublicProfileRouting,
     SharedModule,
-    LayoutModule,
-    ArticlesSidebarModule
+    PageHeaderModule,
+    SectionModule,
+    BoxesModule,
+    ArticlesSidebarModule,
+    UserStatsBoxModule
   ]
 })
 

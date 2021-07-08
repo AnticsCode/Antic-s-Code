@@ -1,0 +1,185 @@
+.course {
+  background: var(--light-color);
+	border-radius: var(--content-border-radius);
+	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+	display: flex;
+	max-width: 100%;
+	margin: 1.666rem auto;
+	overflow: hidden;
+  width: 100%;
+  position: relative;
+
+  &.last { margin-bottom: 2.5rem }
+}
+
+.course h6 {
+	opacity: .8;
+  margin: 0;
+  font-size: .9rem;
+	letter-spacing: 1px;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.course img {
+  width: 20px;
+  position: relative;
+  left: -8px;
+}
+
+.course h2 {
+	letter-spacing: 1px;
+	margin: 12px 0;
+}
+
+.course-info h6 {
+  margin-bottom: 12px;
+}
+
+.course-preview {
+  // #2A265F
+	background-color: var(--new-color);
+	color: #fff;
+	padding: 30px;
+  width: 190px;
+  min-height: 144px;
+}
+
+.course-preview a {
+  color: #fff;
+  position: absolute;
+  bottom: 31px;
+	display: inline-block;
+	font-size: .9rem;
+	opacity: 0.6;
+  text-decoration: none;
+  cursor: pointer;
+
+  & i {
+    position: relative;
+    left: 5px;
+    top: 2px;
+    transition: all .1s ease-in;
+  }
+
+  &:hover {
+    & i {
+      color: var(--primary-color);
+      transform: translateX(3px);
+    }
+  }
+}
+
+.course-info {
+	padding: 30px;
+	position: relative;
+  width: 100%;
+
+  & p, p.no-test {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+    @media(min-width: 415px) and (max-width: 450px) { max-width: 170px }
+    @media(min-width: 361px) and (max-width: 414px) { max-width: 165px }
+    @media(min-width: 345px) and (max-width: 360px) { max-width: 145px }
+    @media(min-width: 320px) and (max-width: 344px) { max-width: 125px }
+  }
+
+  & p {
+    opacity: .8;
+    position: relative;
+    line-height: 1.4;
+    margin: 0;
+    margin-bottom: .4rem;
+    color: black;
+    &:last-child { margin-bottom: 0 }
+
+    @media(max-width: 350px) { font-size: .8rem !important }
+    &:not(.no-test) {
+      cursor: pointer;
+      outline: none;
+      &:hover { color: var(--primary-color) }
+    }
+
+    &.done {
+      pointer-events: none;
+      &::before {
+        content: '';
+        position: absolute;
+        width: 2.5rem;
+        height: 3px;
+        opacity: .7;
+        z-index: -1;
+        bottom: 0;
+        left: 0;
+        background: var(--success-color);
+        border-radius: 6px;
+      }
+    }
+  }
+}
+
+.progress-container {
+  position: absolute;
+  bottom: 13px;
+  width: 55%;
+  @media(max-width: 625px) and (min-width: 550px) { width: 50% }
+  @media(max-width: 550px) { width: 80% }
+  @media(max-width: 415px) and (min-width: 375px) { max-width: 170px }
+  @media(max-width: 375px) and (min-width: 340px) { max-width: 135px }
+  @media(max-width: 340px) and (min-width: 320px) { max-width: 115px }
+}
+
+.progress {
+	background-color: #ddd;
+	border-radius: 3px;
+	height: 7px;
+  width: 100%;
+  position: relative;
+
+  &-bar {
+    border-radius: 3px;
+    background-color: var(--secondary-color);
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 7px;
+  }
+}
+
+.progress-text {
+	font-size: .8rem !important;
+	opacity: 0.7;
+  letter-spacing: 1px;
+  @media(max-width: 350px) { font-size: .7rem !important }
+}
+
+.btn {
+	background-color: var(--primary-color);
+	border: 0;
+	border-radius: 8px;
+	box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+	color: #fff;
+	font-size: 16px;
+	position: absolute;
+	bottom: 25px;
+	right: 25px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  outline: none;
+}
+
+@media(max-width: 550px) {
+  .course-preview, .course-info { padding: 18px }
+  .course-preview img { left: -6px }
+  .course h6 { font-size: .8rem }
+  .course-preview h6 { left: 2px }
+  .btn { display: none }
+  .course-preview a { bottom: 27px; font-size: 12px; }
+  .progress-container { bottom: 9px }
+}
+
+@media(max-width: 350px) {
+  .course h6, .course-info p { font-size: .7rem }
+}

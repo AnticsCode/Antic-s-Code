@@ -9,9 +9,17 @@ interface Content {
   stars?: number;
   links?: Link[];
   index?: Index[];
+  name?: string;
+  author?: string;
+  message?: string;
+  github?: boolean;
+  githubLink?: string;
+  userLiked?: boolean;
+  user?: string;
+  slug?: string;
 }
 
-interface ServerResponse {
+export interface ServerResponse {
   ok: boolean;
   message?: string;
   err?: any;
@@ -22,25 +30,61 @@ interface Translation {
 }
 
 export interface Article extends Content {
-  message?: string;
-  author?: string;
   created?: string;
   published?: string;
-  slug?: string;
   level?: string;
   views?: number;
   summary?: string;
   status?: string;
-  user?: string;
+  type?: string;
 }
 
 export interface Category extends Content {
-  message?: string;
-  name?: string;
   info?: CategoryInfo;
-  icon?: string;
   faq?: FAQ[];
   updated?: string;
+}
+
+export interface News {
+  _id?: string;
+  title: string;
+  image: string;
+  message: string;
+  preview?: string;
+  date?: string;
+  category?: string;
+  views?: number;
+  slug?: string;
+  links?: Link[];
+  likes?: number;
+  userLiked?: boolean;
+}
+
+export interface Inbox {
+  _id?: string;
+  sender?: User;
+  receiver?: User;
+  subject?: string;
+  messages?: InboxMessage[];
+  created?: string;
+  last?: InboxMessage;
+}
+
+export interface InboxMessage {
+  _id?: string;
+  subject?: string;
+  message?: string;
+  sender?: User;
+  receiver?: User;
+  date?: string;
+  read?: boolean;
+}
+
+export interface SharePayload {
+  url: string;
+  text?: string;
+  title: string;
+  files?: any[];
 }
 
 export interface ArticleResponse extends ServerResponse {
@@ -67,16 +111,39 @@ export interface CategoryCountResponse extends ServerResponse {
   count?: object;
 }
 
+export interface InboxResponse extends ServerResponse {
+  mail?: Inbox[];
+}
+
+export interface NewsResponse extends ServerResponse {
+  news?: News[];
+  viewed?: News[];
+  last?: News[];
+  notice?: News;
+  page?: number;
+}
+
+export interface ArticlesDataResponse extends ServerResponse {
+  articlesCount?: number;
+  lastArticles?: Article[];
+  categoryCount?: object;
+  likedArticles?: Article[];
+  viewedArticles?: Article[];
+}
+
 // tslint:disable-next-line:no-empty-interface
 export interface SWResponse extends ServerResponse {}
 
 export interface User {
   _id?: string;
-  name: string;
-  email: string;
-  password: string;
-  account: string;
+  name?: string;
+  email?: string;
+  password?: string;
+  account?: string;
   profile?: UserProfile;
+  showEmail?: boolean;
+  stats?: UserStats;
+  auth?: boolean;
 }
 
 interface UserProfile {
@@ -90,15 +157,21 @@ interface UserProfile {
   language?: string;
 }
 
-export interface Interaction {
-  content: string;
+export interface Reaction {
+  source: string;
   user: string;
   type: string;
   value: number;
+  target?: string;
 }
 
-export interface InteractionResponse extends ServerResponse {
-  interaction: Interaction[];
+export interface NewPassword {
+  password: string;
+  token: string;
+}
+
+export interface ReactionResponse extends ServerResponse {
+  reactions: Reaction[];
 }
 
 export interface Role extends Translation {
@@ -112,6 +185,11 @@ export interface DialogData {
   cause?: string;
 }
 
+export interface ConfirmationData {
+  message: string;
+  args?: any;
+}
+
 export interface SheetData {
   message?: string;
 }
@@ -119,17 +197,109 @@ export interface SheetData {
 export interface SearchRequest {
   value: string;
   category?: string;
-  tag?: string;
+  tags?: string[];
   year?: string;
   level?: string[];
   badges?: string[];
   stars?: number[];
   type?: string[];
-  sort?: number;
+  sort?: string;
+}
+
+export interface MessageRequest {
+  name: string;
+  email: string;
+  text: string;
+}
+
+export interface WorkCompany {
+  name: string;
+  type: string;
+  rank: string;
+  tasks: string[];
+  link: string;
+  now: boolean;
 }
 
 export interface SearchResponse extends ServerResponse {
   articles?: Article[];
+}
+
+export interface Test {
+  _id?: string;
+  title?: string;
+  category?: string;
+  name?: string;
+  intro?: string;
+  entries?: TestEntry[];
+}
+
+export interface TestEntry {
+  uid?: string;
+  title?: string;
+  category?: string;
+  level?: string;
+  message?: string;
+  questions?: TestQuestion[];
+  done?: boolean;
+}
+
+export interface TestQuestion {
+  uid?: string;
+  category?: string;
+  question?: string;
+  answers?: TestAnswer[];
+  image?: string;
+  code?: string;
+}
+
+export interface TestAnswer {
+  key?: string;
+  value?: string;
+}
+
+export interface TestResponse extends ServerResponse {
+  tests?: Test[];
+  test?: Test;
+}
+
+export interface TestEntryResponse extends ServerResponse {
+  entries?: TestEntry[];
+  entry?: TestEntry;
+  result?: TestResult;
+}
+
+export interface TestResult {
+  uid?: string;
+  title?: string;
+  category?: string;
+  user?: string;
+  level?: string;
+  request?: string[];
+  created?: string;
+  result?: TestRawRequest;
+  raw?: TestRawResult;
+}
+
+export interface TestRawRequest {
+  answer?: boolean[];
+  correct?: number;
+}
+
+export interface TestRawResult {
+  uid?: string;
+  result?: string[];
+}
+
+export interface TestAnswerResult {
+  correct?: number;
+  result?: boolean[];
+}
+
+export interface TestUserResult {
+  question?: string;
+  good?: string;
+  wrong?: string;
 }
 
 export interface List {
@@ -138,6 +308,19 @@ export interface List {
   link?: string;
   category?: string;
   class?: string;
+}
+
+export interface Skill {
+  name: string;
+  area: string;
+  message: string;
+  year: number;
+  icon: string;
+}
+
+export interface TagRequest {
+  id: string;
+  tags: string[];
 }
 
 export interface CarouselSlide {
@@ -149,9 +332,19 @@ export interface CarouselSlide {
 
 export interface DownloadButton {
   platform: string;
-  class: string;
   icon: string;
   link: string;
+}
+
+export interface UserRol {
+  rol: string;
+  icon: string;
+  name: string;
+}
+
+export interface ShowHide {
+  text: string;
+  show: boolean;
 }
 
 export interface FooterList {
@@ -166,6 +359,12 @@ interface FooterLink extends Translation {
 export interface FAQ {
   question: string;
   answer: string;
+}
+
+export interface MessageModalData {
+  title: string;
+  message: string;
+  icon: string;
 }
 
 export interface CategoryInfo {
@@ -184,6 +383,12 @@ export interface Index {
 export interface Config {
   name: string;
   selector: string;
+  translate?: string;
+}
+
+export interface TotalUserData {
+  name: string;
+  icon: string;
 }
 
 export interface Link {
@@ -208,13 +413,18 @@ export interface TimeLine {
   fade: string;
 }
 
-export interface MostActive {
-  name: string;
-  count: number;
+export interface ChatMessage {
+  _id?: string;
+  user: string;
+  message: string;
+  own?: boolean;
+  avatar?: string;
+  created?: string;
+  date?: Date;
 }
 
-export interface MostActiveResponse extends ServerResponse {
-  users: MostActive[];
+export interface ChatResponse extends ServerResponse {
+  messages: ChatMessage[];
 }
 
 export class CustomError {
@@ -250,10 +460,13 @@ export interface NotificationPayload {
   icon?: string;
   vibrate?: number[];
   requireInteraction?: boolean;
+  image?: string;
   data?: NotificationData;
   actions: NotificationAction[];
   user?: string;
   broadcast?: boolean;
+  admin?: boolean;
+  device?: string | RegExp;
 }
 
 interface NotificationData {
@@ -264,4 +477,44 @@ interface NotificationData {
 interface NotificationAction {
   action: string;
   title: string;
+}
+
+export interface UserStats {
+  user: User;
+  score: ScoreStats;
+}
+
+export interface UserStatsResponse extends ServerResponse {
+  stats: UserStats[];
+}
+
+export interface ArticleStats {
+  written?: number;
+  score?: number;
+}
+
+export interface TestStats {
+  correct: number;
+  done?: number;
+  score?: number;
+}
+
+export interface ReactionStats {
+  likes?: number;
+  stars?: number;
+  score?: number;
+}
+
+export interface ProfileStats {
+  likes?: number;
+  stars?: number;
+  views?: number;
+}
+
+export interface ScoreStats {
+  total?: number;
+  articles?: ArticleStats;
+  test?: TestStats;
+  reaction?: ReactionStats;
+  user?: ProfileStats;
 }

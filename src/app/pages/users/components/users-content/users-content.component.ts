@@ -1,13 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { AppState } from '@app/app.config';
+
+import { Observable, Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
-import { User } from '@shared/interfaces/interfaces';
 import { PaginationService } from 'ngx-pagination';
 
-import * as UserActions from '@core/ngrx/actions/user.actions';
-import * as fromUsers from '@core/ngrx/selectors/user.selectors';
+import { USER_ROLS } from '@shared/data/user';
+import { User } from '@shared/interfaces/interfaces';
+import { UsersFacade } from '@store/users/users.facade';
 
 @Component({
   selector: 'app-users-content',
@@ -18,56 +17,43 @@ import * as fromUsers from '@core/ngrx/selectors/user.selectors';
 export class UsersContentComponent implements OnInit, OnDestroy {
 
   private unsubscribe$ = new Subject<void>();
-  users: User[] = [];
-  filteredUsers: User[] = [];
+  users$: Observable<User[]>;
+  filtered$: Observable<User[]>;
   page = 1;
-  itemsPerPage = 10;
+  itemsPerPage = 5;
   value = '';
+  userRols = USER_ROLS;
 
   constructor(
-    private store: Store<AppState>,
+    private usersFacade: UsersFacade,
     private pagination: PaginationService
   ) { }
 
   ngOnInit() {
     this.checkData();
-    this.getUsers();
     this.getCurrentPage();
+    this.users$ = this.usersFacade.users$;
+    this.filtered$ = this.usersFacade.filtered$;
   }
 
   private checkData(): void {
-    this.store.select(fromUsers.getAllLoaded)
+    this.usersFacade.usersLoaded$
      .pipe(
        takeUntil(this.unsubscribe$),
        filter(res => !res)
       )
-     .subscribe(_ => this.store.dispatch(UserActions.get())
-    );
+     .subscribe(_ => this.usersFacade.get());
   }
 
-  private getUsers(): void {
-    this.store.select(fromUsers.getAll)
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((res: User[]) => {
-      this.users = res;
-      this.filteredUsers = res;
-    });
-  }
 
   public sort(rol: string): void {
-    if (rol === 'All') {
-      this.filteredUsers = this.users;
-      this.doResize();
-      return;
-    }
-    this.filteredUsers = this.users
-    .filter(user => user.account === rol);
+    rol === 'ALL' ? rol = '' : rol = rol;
+    this.usersFacade.sort(rol);
     this.doResize();
   }
 
   public search(): void {
-    this.filteredUsers = this.users
-    .filter(user => user.name.match(new RegExp(this.value, 'i')));
+    this.usersFacade.search(this.value);
     this.doResize();
   }
 

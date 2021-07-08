@@ -1,27 +1,15 @@
-<div *onlyMobile>
-  <div class="row">
-    <div class="col-lg-12">
-      <app-single-category-info-box [category]="category">
-      </app-single-category-info-box>
-    </div>
-  </div>
-  <button mat-button
-          class="btn-pink"
-          aria-label="Favorite">{{'favorite' | translate}}
-  </button>
-</div>
-
-<app-single-category-index-box></app-single-category-index-box>
-
- <!-- CATEGORY CONTENT -->
- <div *ngIf="category.message">
+<!-- CATEGORY CONTENT -->
+<div *ngIf="category.message">
   <app-content-maker [template]="category.message">
   </app-content-maker>
 </div>
 
 <app-single-category-faq-box [category]="category"></app-single-category-faq-box>
-
 <app-links-box *ngIf="category?.links.length > 0"
                [links]="category?.links">
 </app-links-box>
-
+<div class="margin"></div>
+<app-star-rating [content]="category"
+                 type="category">
+</app-star-rating>
+<app-disqus [identifier]="category.category"></app-disqus>

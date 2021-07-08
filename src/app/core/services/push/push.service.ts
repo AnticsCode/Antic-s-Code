@@ -1,14 +1,16 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpService } from '../http/http.service';
-import { environment } from '@env/environment';
-import { Observable } from 'rxjs';
-import { StorageService } from '@core/storage/storage.service';
 import { SwUpdate, SwPush } from '@angular/service-worker';
+import { environment } from '@env/environment';
 import { DOCUMENT } from '@angular/common';
-import { NotificationPayload, SWResponse } from '@shared/interfaces/interfaces';
-import { WELCOME_PUSH } from '@shared/shared.data';
-import { filter, switchMap } from 'rxjs/operators';
+
+import { HttpService } from '../http/http.service';
+import { StorageService } from '@core/storage/storage.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
+
+import { Observable } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
+import { NotificationPayload, SWResponse } from '@shared/interfaces/interfaces';
+import { WELCOME_PUSH } from '@shared/data/notifications';
 
 @Injectable({providedIn: 'root'})
 
@@ -42,11 +44,11 @@ export class PushService {
         serverPublicKey: this.pushKey
       }).then((sub: PushSubscription) => {
         if (sub) {
-          this.saveSubscription(sub)
+          this.save(sub)
             .pipe(
               filter(res => res && !this.ls.get('welcome')),
-              switchMap(_ => this.sendNotification(
-                this.setNotification(Object.assign({}, WELCOME_PUSH))
+              switchMap(_ => this.send(
+                this.set(Object.assign({}, WELCOME_PUSH))
               ))
             )
             .subscribe(_ => this.ls.setKey('welcome', true));
@@ -56,7 +58,7 @@ export class PushService {
     }, 10000);
   }
 
-  public saveSubscription(
+  public save(
     sub: PushSubscription
   ): Observable<SWResponse> {
     return this.http
@@ -68,7 +70,7 @@ export class PushService {
       );
   }
 
-  public sendNotification(
+  public send(
     payload: NotificationPayload
   ): Observable<SWResponse> {
     return this.http
@@ -78,7 +80,7 @@ export class PushService {
       );
   }
 
-  private setNotification(
+  private set(
     payload: NotificationPayload
   ): NotificationPayload {
     payload.user = this.ls.get('user');

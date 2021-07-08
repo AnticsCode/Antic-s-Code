@@ -1,7 +1,7 @@
 .section {
   position: relative;
   padding: 4.4444rem 1rem 3.6666rem;
-  min-height: 360px;
+  min-height: 300px;
 
   &-container {
     padding-right: 15px;
@@ -28,7 +28,7 @@
         margin: -3px 0 .86667rem;
         font-size: 1.9rem;
         font-weight: 700;
-        color: var(--title-color);
+        color: var(--new-color);
     }
 
     & p {
@@ -40,7 +40,7 @@
     }
   }
 
-  @media (max-width: 992px) { padding: 3.06667rem 1rem 2.66667rem }
+  @media (max-width: 993px) { padding: 3.06667rem 1rem 2.66667rem }
   @media (max-width: 550px) { padding: 2.56667rem 1.2rem 1.36667rem }
 }
 
@@ -52,6 +52,11 @@
   .section-title h2 { font-size: 1.6rem }
   .section-title { margin-bottom: 1.2rem }
   .section-title p { font-size: 1rem }
+
+  .col-lg-12 {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 }
 
 @media(max-width: 450px) {
@@ -71,7 +76,7 @@
 
 .margin-top {
   margin-top: -50px;
-  @media(max-width: 992px) { margin-top: -40px }
+  @media(max-width: 993px) { margin-top: -40px }
   @media(max-width: 550px) { margin-top: -10px }
 }
 
@@ -79,7 +84,7 @@
   padding: 5rem 0 5.33337rem;
   position: relative;
   text-align: center;
-  background-image: url('assets/img/sb-shape.svg');
+  background-image: url('../../../../../assets/img/sb-shape.svg');
   background-repeat: no-repeat;
   -webkit-background-size: cover;
   background-size: cover;

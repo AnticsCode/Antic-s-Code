@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { MAIN_CATEGORIES, TAGS } from '@shared/shared.data';
-import { AppState } from '@app/app.config';
-import { Store } from '@ngrx/store';
-import * as SearchActions from '@core/ngrx/actions/search.actions';
-import { SearchRequest } from '@shared/interfaces/interfaces';
 import { Router } from '@angular/router';
+
+import { SearchFacade } from '@store/search/search.facade';
+
+import { SearchRequest } from '@shared/interfaces/interfaces';
+import { MAIN_CATEGORIES } from '@shared/data/categories';
+import { TAGS } from '@shared/data/article';
 
 @Component({
   selector: 'app-header-search',
   templateUrl: './header-search.component.html',
-  styleUrls: ['./header-search.component.scss']
+  styleUrls: ['./header-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class HeaderSearchComponent implements OnInit {
@@ -20,7 +22,7 @@ export class HeaderSearchComponent implements OnInit {
   tags = TAGS;
 
   constructor(
-    private store: Store<AppState>,
+    private searchFacade: SearchFacade,
     private router: Router
   ) { }
 
@@ -32,16 +34,14 @@ export class HeaderSearchComponent implements OnInit {
     this.searchForm = new FormGroup({
        value: new FormControl(null, []),
     category: new FormControl(null, []),
-         tag: new FormControl(null, [])
+         tags: new FormControl(null, [])
     });
   }
 
   onSubmit(): void {
-    if (this.searchForm.value.value == null &&
-        this.searchForm.value.category == null &&
-        this.searchForm.value.tag == null) { return; }
+    if (Object.values(this.searchForm.value).every(v => v == null)) { return; }
     const request: SearchRequest = this.searchForm.value;
-    this.store.dispatch(SearchActions.searchContent({ request }));
+    this.searchFacade.search(request);
     this.router.navigateByUrl('/search');
   }
 

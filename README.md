@@ -1,10 +1,12 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c4b181e6-e1fb-43f4-9522-b13271108267/deploy-status)](https://app.netlify.com/sites/anticscode/deploys)
+
 # Antic's Code
 
 https://anticscode.netlify.com/
 
 # Angular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.0.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.2
 
 ## Development server
 

@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
-import { MY_SKILLS_LOGO, MY_SKILLS } from '@app/shared/shared.data';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { MY_SOFT_SKILLS, MY_HARD_SKILLS } from '@shared/data/me';
 
 @Component({
   selector: 'app-about-skills',
   templateUrl: './about-skills.component.html',
-  styleUrls: ['./about-skills.component.scss']
+  styleUrls: ['./about-skills.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class AboutSkillsComponent {
 
-  skillsIcon = MY_SKILLS_LOGO;
-  skills = MY_SKILLS;
+  softSkills = MY_SOFT_SKILLS;
+  hardSkills = MY_HARD_SKILLS;
 
   constructor() { }
 

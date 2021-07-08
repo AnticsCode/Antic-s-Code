@@ -39,6 +39,22 @@
   animation-name: fadeInLeft;
 }
 
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fadeInRight {
+  animation-name: fadeInRight;
+}
+
 @-webkit-keyframes fadeOutLeft {
   from {
     opacity: 1;
@@ -68,21 +84,6 @@
   animation-name: fadeOutLeft;
 }
 
-// CUSTOM ANIMATIONS
-@keyframes ClockwiseSpin {
-  0%  {transform: rotate(0deg);}
-  100% {transform: rotate(360deg);}
-}
-
-@keyframes AntiClockwiseSpin {
-  0%  {transform: rotate(360deg);}
-  100% {transform: rotate(0deg);}
-}
-
-@keyframes SpinBack {
-  to {transform: rotate(360deg);}
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -110,5 +111,21 @@
 .fadeOut {
   animation-name: fadeOut;
 }
+
+// CUSTOM ANIMATIONS
+@keyframes ClockwiseSpin {
+  0%  {transform: rotate(0deg);}
+  100% {transform: rotate(360deg);}
+}
+
+@keyframes AntiClockwiseSpin {
+  0%  {transform: rotate(360deg);}
+  100% {transform: rotate(0deg);}
+}
+
+@keyframes SpinBack {
+  to {transform: rotate(360deg);}
+}
+
 
 

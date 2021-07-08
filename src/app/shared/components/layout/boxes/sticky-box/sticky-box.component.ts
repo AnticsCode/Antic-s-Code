@@ -1,11 +1,12 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { Component, OnInit, Input, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { debounceTime, takeUntil, filter } from 'rxjs/operators';
 import { fromEvent, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-sticky-box',
   templateUrl: './sticky-box.component.html',
-  styleUrls: ['./sticky-box.component.scss']
+  styleUrls: ['./sticky-box.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class StickyBoxComponent implements OnInit, OnDestroy {
@@ -18,7 +19,9 @@ export class StickyBoxComponent implements OnInit, OnDestroy {
   constructor() { }
 
   ngOnInit() {
-    this.subscribeToScroll();
+    setTimeout(() => {
+      this.subscribeToScroll();
+    }, 2000);
   }
 
   private subscribeToScroll(): void {
@@ -26,25 +29,29 @@ export class StickyBoxComponent implements OnInit, OnDestroy {
     fromEvent(window, 'scroll')
     .pipe(
       takeUntil(this.unsubscribe$),
+      filter(res => !!res && !!this.selector),
       debounceTime(100)
     )
     .subscribe(() => this.onScroll());
   }
 
   private onScroll(): void {
-    if (!this.selector) { return; }
-    const width = window.document.body.clientWidth;
-    const div = document.getElementById(this.selector)
-                        .getBoundingClientRect().height;
+    try {
+      const bodyW = window.document.body.clientWidth;
+      const div = document.getElementById(this.selector);
+      let elementH: number;
+      div ? elementH = div.getBoundingClientRect().height : elementH = 0;
+      if (bodyW < 985 || elementH < 799) {
+        this.display = true;
+        return;
+      }
 
-    if (width < 985 || div < 799) {
-      this.display = true;
-      return;
+      const bodyH = window.document.body.clientHeight;
+      const scrollY = window.scrollY;
+      this.display = !((scrollY / bodyH) * 100 > 85);  // 84% SCROLL
+    } catch (err) {
+      console.log(err);
     }
-
-    const height = window.document.body.clientHeight;
-    const scroll = window.scrollY;
-    this.display = !((scroll / height) * 100 > 84);  // 84% SCROLL
   }
 
   ngOnDestroy(): void {

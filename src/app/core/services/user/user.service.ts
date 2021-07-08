@@ -1,40 +1,45 @@
 import { Injectable } from '@angular/core';
-import { AppState } from '@app/app.config';
 import { HttpService } from '../http/http.service';
+import { environment } from '@env/environment';
 
 import {
   User,
   UserResponse,
-  MostActiveResponse,
-  MostActive
+  MessageRequest,
+  UserStats,
+  UserStatsResponse,
+  NewPassword
  } from '@shared/interfaces/interfaces';
 
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { StorageService } from '@core/storage/storage.service';
-import { Store } from '@ngrx/store';
-import * as UserActions from '@core/ngrx/actions/user.actions';
 import { map, filter, tap } from 'rxjs/operators';
-import { environment } from '@env/environment';
+import { AuthService } from '../login/auth.service';
 import { PushService } from '../push/push.service';
+import { UsersFacade } from '@store/users/users.facade';
+import { ServerResponse } from '@shared/interfaces/interfaces';
 
 @Injectable({providedIn: 'root'})
 
 export class UserService {
 
+  readonly API_USER = environment.api + 'user';
   readonly API_USERS = environment.api + 'users';
   readonly API_TOKEN = environment.api + 'token';
   private user: User;
+  public chatUser: string;
 
   constructor(
     private http: HttpService,
     private ls: StorageService,
-    private store: Store<AppState>,
-    private sw: PushService
+    private userFacade: UsersFacade,
+    private sw: PushService,
+    private auth: AuthService
   ) { }
 
   public getById(id: string): Observable<User> {
     return this.http
-      .get<UserResponse>(environment.api + `user/${id}`)
+      .get<UserResponse>(this.API_USER + `/${id}`)
       .pipe(
         filter(res => res && !!res.ok),
         map(_ => _.user)
@@ -59,11 +64,24 @@ export class UserService {
       );
   }
 
+  public getStats(): Observable<UserStats[]> {
+    return this.http
+      .get<UserStatsResponse>(this.API_USERS + '/stats')
+      .pipe(
+        filter(res => res && !!res.ok),
+        map(_ => _.stats)
+      );
+  }
+
   public update(user: User): Observable<UserResponse> {
     return this.http
       .put<UserResponse>(this.API_USERS, user)
       .pipe(
-        filter(res => res && !!res.ok)
+        filter(res => res && !!res.ok),
+        tap(res => {
+          this.ls.setKey('token', res.token);
+          this.userFacade.set(res.user);
+        })
       );
   }
 
@@ -76,21 +94,31 @@ export class UserService {
       );
   }
 
-  public getMostActive(): Observable<MostActive[]> {
+  public getLast(): Observable<User> {
     return this.http
-      .get<MostActiveResponse>(this.API_USERS + '/active')
+      .get<UserResponse>(this.API_USERS + '/last')
       .pipe(
         filter(res => res && !!res.ok),
-        map(_ => _.users)
+        map(_ => _.user)
       );
   }
 
-  public refreshToken(id: string): Observable<UserResponse> {
+  public getUserEmailById(id: string): Observable<string> {
+    return this.http
+      .get<UserResponse>(this.API_USER + '/email/' + id)
+      .pipe(
+        filter(res => res && !!res.ok),
+        map(res => res.user.email)
+      );
+  }
+
+  public refreshToken(id: string): Observable<User> {
     return this.http
       .post<UserResponse>(this.API_TOKEN + `/${id}`, null)
       .pipe(
         filter(res => res && !!res.ok),
-        tap(res => this.setToken(res))
+        tap(res => this.setToken(res)),
+        map(res => res.user)
       );
   }
 
@@ -104,31 +132,76 @@ export class UserService {
       );
   }
 
+  public verifyEmailToken(token: string): Observable<boolean> {
+    return this.http
+      .get<ServerResponse>(this.API_TOKEN + '/email/' + token)
+      .pipe(
+        map(res => res.ok)
+      );
+  }
+
+  public recoverPassword(email: string): Observable<ServerResponse> {
+    return this.http
+    .get<ServerResponse>(this.API_USERS + '/recover/' + email)
+    .pipe(
+      filter(res => res && !!res.ok)
+    );
+  }
+
+  public createNewPassword(data: NewPassword): Observable<ServerResponse> {
+    return this.http
+    .post<ServerResponse>(this.API_USERS + '/new', data)
+    .pipe(
+      filter(res => res && !!res.ok)
+    );
+  }
+
+  public isEmailTaken(email: string): Observable<ServerResponse> {
+    return this.http
+    .get<ServerResponse>(this.API_USERS + '/email/' + email);
+  }
+
+  public sendMeAMessage(request: MessageRequest): Observable<UserResponse> {
+    return this.http
+    .post<UserResponse>(environment.api + 'message', request)
+    .pipe(
+      filter(res => res && !!res.ok)
+    );
+  }
+
   public getUser(): User {
     return this.user || null;
   }
 
-  private setUser(user: User): void {
-    this.user = user;
+  public getChatUser(): string {
+    return this.chatUser || null;
   }
 
-  public login(
+  private setUser(user: User): void {
+    this.user = user;
+    this.chatUser = user.name;
+    this.userFacade.set(user);
+  }
+
+  public setChatUser(name: string): void {
+    this.chatUser = name;
+  }
+
+  public logIn(
     data: UserResponse,
     remember: boolean = false
   ): void {
-      this.store.dispatch(UserActions.set({user: data.user}));
+      this.ls.userLogIn(data, remember);
       this.setUser(data.user);
-      this.ls.setKey('token', data.token);
-      this.ls.setKey('user', data.user._id);
-      this.ls.setKey('remember', remember);
       this.sw.showPrompt();
   }
 
-  public logout(): void {
-    this.ls.setKey('token', null);
-    this.ls.setKey('welcome', false);
-    this.store.dispatch(UserActions.userLogOut());
+  public logOut(): void {
+    this.ls.userLogOut();
+    this.userFacade.logOut();
+    this.auth.logOut();
     this.user = null;
+    this.chatUser = null;
   }
 
   private setToken(data: UserResponse): void {

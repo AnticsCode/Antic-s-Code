@@ -1,0 +1,26 @@
+<div class="entry">
+  <div class="entry-content">
+    <h5 class="title">
+      <img [src]="(entry.category | logo) | image: 'logos'"
+           [alt]="entry.category"/>
+      {{entry.title}}
+      <mat-icon *ngIf="entry.done">check</mat-icon>
+    </h5>
+    <app-level-bar [level]="entry.level"></app-level-bar>
+    <p [innerHTML]="entry.message"></p>
+    <div class="entry-data">
+      <button mat-button
+              class="btn-disabled"
+              (click)="checkResult(entry)"
+              [disabled]="!entry.done">
+              {{'RESULTS' | translate}}
+      </button>
+      <button mat-button
+              class="btn-pink"
+              (click)="navigate(entry)"
+              [disabled]="entry.done">
+              {{'START' | translate}}
+      </button>
+    </div>
+  </div>
+</div>

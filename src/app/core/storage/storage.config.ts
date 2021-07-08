@@ -10,6 +10,7 @@ export interface StorageConfig extends ModuleConfig {
   THEME: string;
   REMEMBER: boolean;
   WELCOME: boolean;
+  CHAT: boolean;
 }
 
 export const STORAGE_CONSTANTS: StorageConfig = {
@@ -18,17 +19,20 @@ export const STORAGE_CONSTANTS: StorageConfig = {
   LANGUAGE: APP_CONSTANTS.DEFAULT_LANGUAGE,
   REMEMBER: false,
   WELCOME: false,
+  CHAT: true
 };
 
 export class Storage {
   lang = APP_CONSTANTS.DEFAULT_LANGUAGE;
+  remember = STORAGE_CONSTANTS.REMEMBER;
+  theme = STORAGE_CONSTANTS.THEME;
+  welcome = STORAGE_CONSTANTS.WELCOME;
+  chat = STORAGE_CONSTANTS.CHAT;
   token = null;
   user = null;
-  remember = STORAGE_CONSTANTS.REMEMBER;
   // tslint:disable-next-line:variable-name
-  user_lang = false;
-  theme = STORAGE_CONSTANTS.THEME;
-  welcome = STORAGE_CONSTANTS.WELCOME
+  skip_lang = false;
+  visual = false;
 }
 
 export let STORAGE_CONFIG = new InjectionToken<StorageConfig>('storage.config');
